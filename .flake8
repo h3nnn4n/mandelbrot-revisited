@@ -1,0 +1,10 @@
+[flake8]
+max-line-length = 144
+exclude =
+  .git,
+  __pycache__,
+  assets,
+
+extend-ignore = D100,D101,D102,D103,D105,D107,I100,CNL100,I201
+
+inline-quotes = "
