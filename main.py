@@ -111,12 +111,34 @@ class Fractal(Example):
 
         imgui.new_frame()
 
+        # FPS
+
         imgui.begin("Config", True)
 
         imgui.text("Hello fractal world!")
         imgui.text(f"fps: {fps:5.2f} ({frame_time_ms:.2f}ms)")
 
         imgui.end()
+
+        # Position
+
+        imgui.begin("Position", True)
+
+        scale = self.scale.value
+        center = self.center.value
+        center_x = center[0]
+        center_y = center[1]
+
+        imgui.text(f"center: {center_x} {center_y}")
+        imgui.text(f"real: {center_x - scale} {center_x + scale}")
+        imgui.text(f"imag: {center_y - scale} {center_y + scale}")
+        imgui.text(f"scale: {scale}")
+        imgui.text(f"iter: {self.iter.value}")
+        imgui.text(f"ratio: {self.ratio.value}")
+
+        imgui.end()
+
+        # End
 
         imgui.render()
         self.imgui.render(imgui.get_draw_data())
