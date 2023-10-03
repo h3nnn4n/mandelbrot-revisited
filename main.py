@@ -1,4 +1,5 @@
 import os
+import typing as t
 
 import imgui
 import moderngl
@@ -89,15 +90,17 @@ class Fractal(Example):
         self.vbo = self.ctx.buffer(vertices.astype("f4"))
         self.vao = self.ctx.simple_vertex_array(self.prog, self.vbo, "in_vert")
 
+        self.center.value = (0.5, 0.0)
+        self.iter.value = 100
+        self.scale.value = 1.5
+
+        self.mouse_position: t.Tuple[int, int] = (0, 0)
+
     def render(self, time, frame_time):
         self.time = time
         self.frame_time = frame_time
 
         self.ctx.clear(1.0, 1.0, 1.0)
-
-        self.center.value = (0.5, 0.0)
-        self.iter.value = 100
-        self.scale.value = 1.5
         self.ratio.value = self.aspect_ratio
 
         self.texture.use()
@@ -138,10 +141,36 @@ class Fractal(Example):
 
         imgui.end()
 
+        # Mouse
+
+        imgui.begin("Mouse", True)
+
+        mouse_fractal_position = self._screen_to_fractal_position(self.mouse_position)
+        imgui.text(f"  mouse: {self.mouse_position}")
+        imgui.text(f"fractal: {mouse_fractal_position}")
+
+        imgui.end()
+
         # End
 
         imgui.render()
         self.imgui.render(imgui.get_draw_data())
+
+    def _screen_to_fractal_position(self, position: t.Tuple[int | float, int | float]) -> t.Tuple[float, float]:
+        p_x, p_y = position
+        screen_width, screen_height = self.window_size
+
+        scale = self.scale.value
+        fcenter_x, fcenter_y = self.center.value
+        fx_min = fcenter_x - scale
+        fy_min = fcenter_y - scale
+
+        f_x = (p_x / screen_width) * (scale * 2.0) + fx_min
+        f_y = (1.0 - (p_y / screen_height)) * (scale * 2.0) + fy_min
+
+        return (f_x, f_y)
+
+    # Event Handlers
 
     def resize(self, width: int, height: int):
         self.imgui.resize(width, height)
@@ -150,16 +179,30 @@ class Fractal(Example):
         self.imgui.key_event(key, action, modifiers)
 
     def mouse_position_event(self, x, y, dx, dy):
+        self.mouse_position = (x, y)
         self.imgui.mouse_position_event(x, y, dx, dy)
 
     def mouse_drag_event(self, x, y, dx, dy):
+        # Maybe use dragging tomove around instead of clicking?
         self.imgui.mouse_drag_event(x, y, dx, dy)
 
     def mouse_scroll_event(self, x_offset, y_offset):
         self.imgui.mouse_scroll_event(x_offset, y_offset)
 
+        if y_offset > 0:
+            self.scale.value *= 1.05
+
+        if y_offset < 0:
+            self.scale.value *= 0.95
+
     def mouse_press_event(self, x, y, button):
+        # FIXME: If the mouse press hits an imgui ui element, the fractal shouldn't move
         self.imgui.mouse_press_event(x, y, button)
+
+        # FIXME: This is moving relative to how far the mouse is from the
+        # center of the screen, not to where it was clicked
+        mouse_fractal_position = self._screen_to_fractal_position((x, y))
+        self.center.value = mouse_fractal_position
 
     def mouse_release_event(self, x: int, y: int, button: int):
         self.imgui.mouse_release_event(x, y, button)
