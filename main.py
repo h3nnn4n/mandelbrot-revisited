@@ -55,6 +55,7 @@ class Fractal(Example):
 
                 void main() {
                     vec2 c;
+                    float p;
                     int i;
 
                     c.x = Ratio * v_text.x * Scale - Center.x;
@@ -74,7 +75,15 @@ class Fractal(Example):
                         z.y = y;
                     }
 
-                    f_color = texture(Texture, vec2((i == Iter ? 0.0 : float(i)) / 100.0, 0.0));
+                    if (i == Iter) {
+                        f_color = vec4(0, 0, 0, 1);
+                    } else {
+                        p = float(i);
+                        p += 1.0 - log(log(length(z))) / log(2.0);
+                        p /= float(Iter);
+
+                        f_color = texture(Texture, vec2(p, 0.0));
+                    }
                 }
             """,
         )
