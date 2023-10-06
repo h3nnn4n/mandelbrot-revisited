@@ -165,8 +165,8 @@ class Fractal(Example):
         fx_min = fcenter_x - scale
         fy_min = fcenter_y - scale
 
-        f_x = (p_x / screen_width) * (scale * 2.0) + fx_min
-        f_y = (1.0 - (p_y / screen_height)) * (scale * 2.0) + fy_min
+        f_x = (1.0 - (p_x / screen_width)) * (scale * 2.0) + fx_min
+        f_y = (p_y / screen_height) * (scale * 2.0) + fy_min
 
         return (f_x, f_y)
 
@@ -199,8 +199,6 @@ class Fractal(Example):
         # FIXME: If the mouse press hits an imgui ui element, the fractal shouldn't move
         self.imgui.mouse_press_event(x, y, button)
 
-        # FIXME: This is moving relative to how far the mouse is from the
-        # center of the screen, not to where it was clicked
         mouse_fractal_position = self._screen_to_fractal_position((x, y))
         self.center.value = mouse_fractal_position
 
