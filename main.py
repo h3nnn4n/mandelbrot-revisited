@@ -133,11 +133,14 @@ class Fractal(Example):
         center_x = center[0]
         center_y = center[1]
 
+        changed, value = imgui.slider_int("iterations", self.iter.value, min_value=0, max_value=2048, format="%d")
+        if changed:
+            self.iter.value = value
+
         imgui.text(f"center: {center_x} {center_y}")
         imgui.text(f"real: {center_x - scale} {center_x + scale}")
         imgui.text(f"imag: {center_y - scale} {center_y + scale}")
         imgui.text(f"scale: {scale}")
-        imgui.text(f"iter: {self.iter.value}")
         imgui.text(f"ratio: {self.ratio.value}")
 
         imgui.end()
