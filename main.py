@@ -27,6 +27,7 @@ class Fractal(Example):
 
         imgui.create_context()
         self.imgui = ModernglWindowRenderer(self.wnd)
+        self.imgui_io = imgui.get_io()
 
         self.prog = self.ctx.program(
             vertex_shader="""
@@ -196,8 +197,10 @@ class Fractal(Example):
             self.scale.value *= 0.95
 
     def mouse_press_event(self, x, y, button):
-        # FIXME: If the mouse press hits an imgui ui element, the fractal shouldn't move
         self.imgui.mouse_press_event(x, y, button)
+
+        if self.imgui_io.want_capture_mouse:
+            return
 
         mouse_fractal_position = self._screen_to_fractal_position((x, y))
         self.center.value = mouse_fractal_position
